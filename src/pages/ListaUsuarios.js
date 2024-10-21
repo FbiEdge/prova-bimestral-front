@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+// src/pages/ListaUsuarios.js
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function ListaUsuarios() {
+const ListaUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
 
   useEffect(() => {
     const fetchUsuarios = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/usuarios');
+        const response = await axios.get('https://cadastro-api.vercel.app/api/usuarios'); // Sua API
         setUsuarios(response.data);
       } catch (error) {
         console.error('Erro ao buscar usuários', error);
@@ -16,22 +17,30 @@ function ListaUsuarios() {
     fetchUsuarios();
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`https://cadastro-api.vercel.app/api/usuarios/${id}`); // Sua API
+      setUsuarios(usuarios.filter(usuario => usuario.id !== id));
+      alert('Usuário excluído com sucesso!');
+    } catch (error) {
+      console.error('Erro ao excluir usuário', error);
+      alert('Erro ao excluir usuário.');
+    }
+  };
+
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto', marginTop: '50px' }}>
-      <h2>Lista de Usuários</h2>
-      {usuarios.length === 0 ? (
-        <p>Nenhum usuário cadastrado.</p>
-      ) : (
-        <ul>
-          {usuarios.map((usuario, index) => (
-            <li key={index}>
-              {usuario.nome} - {usuario.email} - {usuario.telefone}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div>
+      <h1>Lista de Usuários</h1>
+      <ul>
+        {usuarios.map((usuario) => (
+          <li key={usuario.id}>
+            {usuario.nome} - {usuario.email} - {usuario.telefone}
+            <button onClick={() => handleDelete(usuario.id)}>Excluir</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
 export default ListaUsuarios;

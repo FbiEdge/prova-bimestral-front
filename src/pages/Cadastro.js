@@ -1,8 +1,9 @@
-import { useState } from 'react';
+// src/pages/Cadastro.js
+import React, { useState } from 'react';
 import axios from 'axios';
-import InputMask from 'react-input-mask';
+import { useNavigate } from 'react-router-dom';
 
-function Cadastro() {
+const Cadastro = () => {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -12,15 +13,17 @@ function Cadastro() {
     genero: 'Masculino',
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/usuarios', formData);
+      await axios.post('https://cadastro-api.vercel.app/api/usuarios', formData); // Use sua API
       alert('Usuário cadastrado com sucesso!');
       setFormData({
         nome: '',
@@ -30,14 +33,15 @@ function Cadastro() {
         telefone: '',
         genero: 'Masculino',
       });
+      navigate('/usuarios'); // Redireciona para a lista de usuários
     } catch (error) {
       console.error('Erro ao cadastrar usuário', error);
+      alert('Erro ao cadastrar usuário.');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={formStyle}>
-      <h2>Cadastro de Usuário</h2>
+    <form onSubmit={handleSubmit}>
       <input
         type="text"
         name="nome"
@@ -69,10 +73,10 @@ function Cadastro() {
         onChange={handleChange}
         required
       />
-      <InputMask
-        mask="+99 99999-9999"
+      <input
+        type="tel"
         name="telefone"
-        placeholder="Telefone"
+        placeholder="Telefone (ex: +55 11 99999-9999)"
         value={formData.telefone}
         onChange={handleChange}
         required
@@ -83,17 +87,9 @@ function Cadastro() {
         <option value="Outro">Outro</option>
       </select>
       <button type="submit">Cadastrar</button>
+      <button type="button" onClick={() => navigate('/usuarios')}>Ver Usuários</button>
     </form>
   );
-}
-
-const formStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-  maxWidth: '400px',
-  margin: 'auto',
-  marginTop: '50px',
 };
 
 export default Cadastro;
